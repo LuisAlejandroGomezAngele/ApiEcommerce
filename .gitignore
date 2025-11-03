@@ -1,0 +1,87 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+out/
+*.log
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Visual Studio
+.vs/
+.vscode/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+*.nuget.props
+*.nuget.targets
+
+## Dotnet artifacts
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Rider
+.idea/
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## Coverage
+*.coverage
+*.coveragexml
+*.codecoverage
+
+## Publish outputs
+publish/
+*.publish.xml
+
+## Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*~.nib
+
+## Database
+*.mdf
+*.ldf
+*.ndf
+
+## Others
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+.env
+.env.*
+secrets.json
+
+## OS generated
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+## Certificates
+*.pfx
+*.p12
+*.cer
+*.crt
+*.key
+
+## Docker
+docker-compose.override.yml
