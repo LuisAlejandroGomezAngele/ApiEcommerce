@@ -78,4 +78,39 @@ public class CategoriesController : ControllerBase
 
         return CreatedAtRoute("GetCategory", new { id = category.Id }, category);
     }
+
+    [HttpPatch("{id:int}", Name = "UpdateCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult UpdateCategory(int id, [FromBody] CreateCategoryDto updateCategoryDto)
+    {
+        if (updateCategoryDto == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var category = _categoryRepository.GetCategory(id);
+        if (category == null)
+        {
+            return NotFound("La categoria con el id especificado no existe.");
+        }
+        if (_categoryRepository.CategoryExists(updateCategoryDto.Name))
+        {
+            ModelState.AddModelError("CustomError", "La categoria ya existe.");
+            return BadRequest(ModelState);
+        }
+        
+    _mapper.Map(updateCategoryDto, category);
+    category.Id = id;
+        if (!_categoryRepository.UpdateCategory(category))
+        {
+            ModelState.AddModelError("CustomError", $"Algo salio mal actualizando el registro {category.Name}");
+            return StatusCode(500, ModelState);
+        }
+
+        return NoContent();
+    }
 }
