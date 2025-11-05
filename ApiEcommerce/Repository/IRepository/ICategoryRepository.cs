@@ -6,7 +6,7 @@ namespace ApiEcommerce.Repository.IRepository
     {
         ICollection<Category> GetCategories();
 
-        Category GetCategory(int id);
+        Category? GetCategory(int id);
 
         bool CategoryExists(int id);
 
