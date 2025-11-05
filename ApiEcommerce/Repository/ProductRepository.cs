@@ -1,4 +1,5 @@
 using System;
+using ApiEcommerce.Models;
 using ApiEcommerce.Repository.IRepository;
 
 namespace ApiEcommerce.Repository;
@@ -32,7 +33,7 @@ public class ProductRepository: IProductRepository
     //Busca un producto por su id
     public Product? GetProduct(int id)
     {
-        return _db.Products.FirstOrDefault(p => p.Id == id);
+        return _db.Products.FirstOrDefault(p => p.ProductId == id);
     }
 
     public bool BuyProduct(string name, int quantity)
@@ -54,7 +55,7 @@ public class ProductRepository: IProductRepository
     //Verifica si un producto existe por su id
     public bool ProductExists(int id)
     {
-        return _db.Products.Any(c => c.Id == id);
+        return _db.Products.Any(c => c.ProductId == id);
     }
     //Verifica si un producto existe por su nombre
     public bool ProductExists(string name)
