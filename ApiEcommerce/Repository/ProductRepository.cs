@@ -29,7 +29,9 @@ public class ProductRepository: IProductRepository
     //Busca un producto por su nombre
     public ICollection<Product> SearchProduct(string name)
     {
-        return _db.Products.Include(p => p.Category).Where(p => p.Name.ToLower().Trim() == name.ToLower().Trim()).ToList();
+        return _db.Products.Include(p => p.Category).Where(
+            p => p.Name.ToLower().Trim().Contains(name.ToLower().Trim()) || 
+                 p.Description.ToLower().Trim().Contains(name.ToLower().Trim())).ToList();
     }
 
     //Busca un producto por su id

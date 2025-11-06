@@ -85,7 +85,7 @@ public class ProductsController : ControllerBase
         return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productDto);
     }
 
-    [HttpGet("searchByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
+    [HttpGet("searchProductByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,4 +100,22 @@ public class ProductsController : ControllerBase
         var productsDto = _mapper.Map<List<ProductDto>>(products);
         return Ok(productsDto);
     }
+
+    [HttpGet("searchProductByNameDescription/{name}", Name = "GetProductsForNameDescription")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetProductsForNameDescription(string name)
+    {
+        var products = _productRepository.SearchProduct(name);
+        if (products == null || !products.Any())
+        {
+            return NotFound("No se encontraron productos para el nombre o descripción especificada.");
+        }
+        var productsDto = _mapper.Map<List<ProductDto>>(products);
+        return Ok(productsDto);
+    }
+
+
 }
