@@ -13,6 +13,8 @@ namespace ApiEcommerce.Repository.IRepository
 
         Product? GetProduct(int id);
 
+        Product? GetProductByName(string name);
+
         bool BuyProduct(string name, int quantity);
 
         bool ProductExists(int id);

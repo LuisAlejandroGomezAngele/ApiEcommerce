@@ -40,6 +40,11 @@ public class ProductRepository: IProductRepository
         return _db.Products.Include(p => p.Category).FirstOrDefault(p => p.ProductId == id);
     }
 
+    public Product? GetProductByName(string name)
+    {
+        return _db.Products.Include(p => p.Category).FirstOrDefault(p => p.Name.ToLower().Trim() == name.ToLower().Trim());
+    }
+
     public bool BuyProduct(string name, int quantity)
     {
         if(string.IsNullOrWhiteSpace(name) || quantity <= 0)

@@ -116,6 +116,36 @@ public class ProductsController : ControllerBase
         var productsDto = _mapper.Map<List<ProductDto>>(products);
         return Ok(productsDto);
     }
+    [HttpPatch("buyProduct/{name}/{quantity:int}", Name = "BuyProduct")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult BuyProduct(string name, int quantity)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest("El nombre del producto no puede estar vacío.");
+        }
+        if (quantity <= 0)
+        {
+            return BadRequest("La cantidad debe ser mayor que cero.");
+        }
+        var foundProduct = _productRepository.GetProductByName(name);
+        if (foundProduct == null)
+        {
+            return NotFound("El producto con el nombre especificado no existe.");
+        }
 
+        var result = _productRepository.BuyProduct(name, quantity);
+        if (!result)
+        {
+            ModelState.AddModelError("CustomError", "No hay suficiente stock para completar la compra.");
+            return BadRequest(ModelState);
+        }
+        
+        var units = quantity == 1 ? "unidad" : "unidades";
+        return Ok($"Compra exitosa de {quantity} {units} del producto '{name}'.");
+    }
 
 }
