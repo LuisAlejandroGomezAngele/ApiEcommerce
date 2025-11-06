@@ -84,4 +84,20 @@ public class ProductsController : ControllerBase
         var productDto = _mapper.Map<ProductDto>(createProduct);
         return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productDto);
     }
+
+    [HttpGet("searchByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetProductsForCategory(int categoryId)
+    {
+        var products = _productRepository.GetProductsInCategory(categoryId);
+        if (products == null || !products.Any())
+        {
+            return NotFound("No se encontraron productos para la categoría especificada.");
+        }
+        var productsDto = _mapper.Map<List<ProductDto>>(products);
+        return Ok(productsDto);
+    }
 }
