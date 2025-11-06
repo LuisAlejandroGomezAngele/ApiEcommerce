@@ -62,9 +62,9 @@ public class ProductRepository: IProductRepository
     }
 
     //Verifica si un producto existe por su id
-    public bool ProductExists(int id)
+    public bool ProductExists(int productId)
     {
-        return _db.Products.Any(c => c.ProductId == id);
+        return _db.Products.Any(c => c.ProductId == productId);
     }
     //Verifica si un producto existe por su nombre
     public bool ProductExists(string name)
