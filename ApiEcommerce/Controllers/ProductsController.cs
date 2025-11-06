@@ -80,6 +80,8 @@ public class ProductsController : ControllerBase
             return StatusCode(500, ModelState);
         }
         // Usar la clave primaria definida en el modelo (ProductId)
-        return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, product);
+        var createProduct = _productRepository.GetProduct(product.ProductId);
+        var productDto = _mapper.Map<ProductDto>(createProduct);
+        return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productDto);
     }
 }

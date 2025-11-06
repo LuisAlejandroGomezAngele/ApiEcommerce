@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using ApiEcommerce.Models;
 using ApiEcommerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiEcommerce.Repository;
 
@@ -16,24 +18,24 @@ public class ProductRepository: IProductRepository
     //Devuelve todos los productos en ICollection del tipo product
     public ICollection<Product> GetProducts()
     {
-        return _db.Products.OrderBy(p => p.Name).ToList();
+        return _db.Products.Include(p => p.Category).OrderBy(p => p.Name).ToList();
     }
     //Devuelve todos los productos de una categoria especifica
     public ICollection<Product> GetProductsInCategory(int categoryId)
     {
-        return _db.Products.Where(p => p.CategoryId == categoryId).ToList();
+        return _db.Products.Include(p => p.Category).Where(p => p.CategoryId == categoryId).ToList();
     }
 
     //Busca un producto por su nombre
     public ICollection<Product> SearchProduct(string name)
     {
-        return _db.Products.Where(p => p.Name.ToLower().Trim() == name.ToLower().Trim()).ToList();
+        return _db.Products.Include(p => p.Category).Where(p => p.Name.ToLower().Trim() == name.ToLower().Trim()).ToList();
     }
 
     //Busca un producto por su id
     public Product? GetProduct(int id)
     {
-        return _db.Products.FirstOrDefault(p => p.ProductId == id);
+        return _db.Products.Include(p => p.Category).FirstOrDefault(p => p.ProductId == id);
     }
 
     public bool BuyProduct(string name, int quantity)
