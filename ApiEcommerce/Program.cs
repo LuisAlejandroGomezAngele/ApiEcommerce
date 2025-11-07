@@ -26,11 +26,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(PolicyNames.AllowSpecificOrigin, builder =>
+    options.AddPolicy(PolicyNames.AllowSpecificOrigin, policy =>
     {
-        builder.WithOrigins("*")
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        // AllowAnyOrigin en lugar de WithOrigins("*") para permitir todos los orígenes
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
