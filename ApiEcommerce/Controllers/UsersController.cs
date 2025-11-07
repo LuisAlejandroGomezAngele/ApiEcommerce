@@ -47,7 +47,7 @@ public class UsersController : ControllerBase
         return Ok(userDto);
     }
 
-    [HttpPost]
+    [HttpPost(Name = "RegisterUser")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -70,7 +70,7 @@ public class UsersController : ControllerBase
             return BadRequest("El nombre de usuario ya existe.");
         }
 
-        var result = await  _userRepository.Register(createUserDto);
+        var result = await _userRepository.Register(createUserDto);
 
         if (result == null)
         {
@@ -80,4 +80,28 @@ public class UsersController : ControllerBase
 
         return CreatedAtRoute("GetUser", new { userId = result.Id }, result);
     }
+
+    [HttpPost("Login", Name = "LoginUser")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> LoginUser([FromBody] UserLoginDto userLoginDto)
+    {
+        if (userLoginDto == null || !ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var result = await _userRepository.Login(userLoginDto);
+
+        if (result == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(result);
+    }
+
 }
