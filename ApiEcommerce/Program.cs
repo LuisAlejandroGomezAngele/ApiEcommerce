@@ -11,8 +11,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<CategoryProfile>());
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<ProductProfile>());
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Registrar AutoMapper registrando los perfiles explícitamente para evitar ambigüedad de sobrecarga
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile<CategoryProfile>();
+    cfg.AddProfile<ProductProfile>();
+    cfg.AddProfile<UserProfile>();
+});
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
