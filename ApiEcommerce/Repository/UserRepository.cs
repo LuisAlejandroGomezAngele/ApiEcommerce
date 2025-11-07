@@ -27,5 +27,24 @@ namespace ApiEcommerce.Repository
         {
             return !_db.Users.Any(u => u.Username.ToLower().Trim() == username.ToLower().Trim());
         }
+
+        public async Task<UserLoginResponseDto> Login(UserLoginDto userLoginDto)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<User> Register(CreateUserDto createUserDto)
+        {
+            var encriptedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
+            var user = new User()
+            {
+                Name = createUserDto.Name ?? "No Name",
+                Username = createUserDto.Username ?? "No UserName",
+                Password = encriptedPassword,
+                Role = createUserDto.Role
+            };
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+            return user;
+        }
     }
 }
