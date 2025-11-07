@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ApiEcommerce.Repository.IRepository;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Mapping;
+using ApiEcommerce.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy("AllowSpecificOrigin", builder =>
+    options.AddDefaultPolicy(PolicyNames.AllowSpecificOrigin, builder =>
     {
         builder.WithOrigins("*")
                .AllowAnyHeader()
@@ -43,7 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
+app.UseCors(PolicyNames.AllowSpecificOrigin);
 
 app.UseAuthorization();
 

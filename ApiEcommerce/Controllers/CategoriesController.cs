@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
+using ApiEcommerce.Constants;
 
 namespace ApiEcommerce.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] //http://localhost:5000/api/categories
+//[EnableCors(PolicyNames.AllowSpecificOrigin)]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
