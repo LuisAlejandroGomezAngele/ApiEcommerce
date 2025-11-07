@@ -1,10 +1,13 @@
-using System.Reflection.Metadata;
-using System.Collections.Specialized;
 using System.Text;
 using System;
+using System.Threading.Tasks;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ApiEcommerce.Repository
 {
@@ -21,7 +24,7 @@ namespace ApiEcommerce.Repository
 
         public User? GetUser(int id)
         {
-            return _db.Users.FirstOrDefault(u => u.UserId == id);
+            return _db.Users.FirstOrDefault(u => u.Id == id);
         }
 
         public ICollection<User> GetUsers()
@@ -40,18 +43,18 @@ namespace ApiEcommerce.Repository
                 return new UserLoginResponseDto()
                 {
                     Token = string.Empty,
-                    User = null
+                    User = null,
                     Message = "Username or password is empty"
                 };
             }
-            var user = await _db.Users.FirstOrDefault<User>(u => u.Username.ToLower().Trim() == userLoginDto.Username.ToLower().Trim());
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Username.ToLower().Trim() == userLoginDto.Username.ToLower().Trim());
 
             if(user == null)
             {
                 return new UserLoginResponseDto()
                 {
                     Token = string.Empty,
-                    User = null
+                    User = null,
                     Message = "User not found"
                 };
             }
@@ -60,7 +63,7 @@ namespace ApiEcommerce.Repository
                 return new UserLoginResponseDto()
                 {
                     Token = string.Empty,
-                    User = null
+                    User = null,
                     Message = "Password is incorrect"
                 };
             }
@@ -78,9 +81,9 @@ namespace ApiEcommerce.Repository
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
                 {
-                    new System.Security.Claims.Claim("id", user.UserId.ToString()),
-                    new System.Security.Claims.Claim("userName", user.Username),
-                    new System.Security.Claims.Claim("role", user.Role ?? string.Empty)
+                    new Claim("id", user.Id.ToString()),
+                    new Claim("userName", user.Username),
+                    new Claim("role", user.Role ?? string.Empty)
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
