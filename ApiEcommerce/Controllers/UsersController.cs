@@ -46,4 +46,38 @@ public class UsersController : ControllerBase
         var userDto = _mapper.Map<UserDto>(user);
         return Ok(userDto);
     }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RegisterUser([FromBody] CreateUserDto createUserDto)
+    {
+        if (createUserDto == null || !ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (string.IsNullOrWhiteSpace(createUserDto.Username))
+        {
+            return BadRequest("El nombre de usuario no puede estar vacío.");
+        }
+
+        if (!_userRepository.IsUniqueUser(createUserDto.Username))
+        {
+            return BadRequest("El nombre de usuario ya existe.");
+        }
+
+        var result = await  _userRepository.Register(createUserDto);
+
+        if (result == null)
+        {
+            ModelState.AddModelError("", "Error al registrar el usuario");
+            return StatusCode(500, ModelState);
+        }
+
+        return CreatedAtRoute("GetUser", new { userId = result.Id }, result);
+    }
 }
