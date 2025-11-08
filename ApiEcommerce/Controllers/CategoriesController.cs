@@ -24,7 +24,7 @@ public class CategoriesController : ControllerBase
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
-
+    [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,7 +38,7 @@ public class CategoriesController : ControllerBase
         }
         return Ok(categoriesDto);
     }
-
+    [AllowAnonymous]
     [HttpGet("{id:int}", Name = "GetCategory")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
