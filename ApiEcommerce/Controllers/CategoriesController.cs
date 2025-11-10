@@ -11,7 +11,8 @@ namespace ApiEcommerce.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] //http://localhost:5000/api/categories
-[Authorize]
+[Authorize(Roles = "Admin")]
+
 //[EnableCors(PolicyNames.AllowSpecificOrigin)]
 public class CategoriesController : ControllerBase
 {

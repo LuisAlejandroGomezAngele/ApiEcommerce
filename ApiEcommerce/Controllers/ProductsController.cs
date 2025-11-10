@@ -11,7 +11,8 @@ namespace ApiEcommerce.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] //http://localhost:5000/api/products
-[Authorize]
+[Authorize(Roles = "Admin")]
+
 public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
@@ -26,7 +27,7 @@ public class ProductsController : ControllerBase
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
-    
+
     [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
