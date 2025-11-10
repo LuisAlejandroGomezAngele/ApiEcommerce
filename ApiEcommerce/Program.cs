@@ -53,16 +53,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers( Options =>
 {
-    Options.CacheProfiles.Add("Default30",
-        new CacheProfile()
-        {
-            Duration = 30
-        });
-    Options.CacheProfiles.Add("Default20",
-        new CacheProfile()
-        {
-            Duration = 20
-        });
+    Options.CacheProfiles.Add(CacheProfiles.Default30, CacheProfiles.Default30Profile);
+    Options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Default20Profile);
 });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
