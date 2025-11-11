@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql")));
 
-builder.Services.AddResponseCaching( options =>
+builder.Services.AddResponseCaching(options =>
 {
     options.MaximumBodySize = 1024 * 1024; // 1 MB
     options.UseCaseSensitivePaths = true;
@@ -52,7 +52,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers( Options =>
+builder.Services.AddControllers(Options =>
 {
     Options.CacheProfiles.Add(CacheProfiles.Default30, CacheProfiles.Default30Profile);
     Options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Default20Profile);
@@ -97,7 +97,7 @@ var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.ReportApiVersions = true;
-    options.ApiVersionReader = ApiVersionReader.Combine( new QueryStringApiVersionReader("api-version"));
+    //options.ApiVersionReader = ApiVersionReader.Combine( new QueryStringApiVersionReader("api-version"));
 });
 
 apiVersioningBuilder.AddApiExplorer(options =>
