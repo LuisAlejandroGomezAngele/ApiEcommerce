@@ -31,6 +31,7 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Obsolete("Este metodo esta obsoleto. Use GetCategoriesOrderById en v2.0")]
     public IActionResult GetCategories()
     {
         var categories = _categoryRepository.GetCategories();
