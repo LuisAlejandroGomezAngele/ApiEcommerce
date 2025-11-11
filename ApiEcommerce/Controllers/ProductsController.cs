@@ -12,8 +12,7 @@ namespace ApiEcommerce.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/products
-[ApiVersion("1.0")]
-[ApiVersion("2.0")]
+[ApiVersionNeutral]
 [Authorize(Roles = "Admin")]
 
 public class ProductsController : ControllerBase
