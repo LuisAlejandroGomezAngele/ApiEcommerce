@@ -5,12 +5,15 @@ using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 
 namespace ApiEcommerce.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/products
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Authorize(Roles = "Admin")]
 
 public class ProductsController : ControllerBase

@@ -8,11 +8,10 @@ using ApiEcommerce.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 
-namespace ApiEcommerce.Controllers;
+namespace ApiEcommerce.Controllers.V2;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/categories
-[ApiVersion("1.0")]
 [ApiVersion("2.0")]
 [Authorize(Roles = "Admin")]
 
@@ -28,27 +27,11 @@ public class CategoriesController : ControllerBase
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
-    [AllowAnonymous]
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [MapToApiVersion("1.0")]
-    public IActionResult GetCategories()
-    {
-        var categories = _categoryRepository.GetCategories();
-        var categoriesDto = new List<CategoryDto>();
-        foreach (var category in categories)
-        {
-            categoriesDto.Add(_mapper.Map<CategoryDto>(category));
-        }
-        return Ok(categoriesDto);
-    }
 
     [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [MapToApiVersion("2.0")]
     public IActionResult GetCategoriesOrderById()
     {
         var categories = _categoryRepository.GetCategories().OrderBy(c => c.Id).ToList();
