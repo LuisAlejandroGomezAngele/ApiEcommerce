@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ApiEcommerce.Repository.IRepository;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Mapping;
@@ -10,6 +11,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,40 +61,76 @@ builder.Services.AddControllers(Options =>
     Options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Default20Profile);
 });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Registrar Api Explorer y Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(
-  options =>
-  {
-      options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-      {
-          Description = "Nuestra API utiliza la Autenticación JWT usando el esquema Bearer. \n\r\n\r" +
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Nuestra API utiliza la Autenticación JWT usando el esquema Bearer. \n\r\n\r" +
                       "Ingresa la palabra a continuación el token generado en login.\n\r\n\r" +
                       "Ejemplo: \"12345abcdef\"",
-          Name = "Authorization",
-          In = ParameterLocation.Header,
-          Type = SecuritySchemeType.Http,
-          Scheme = "Bearer"
-      });
-      options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-      {
-        new OpenApiSecurityScheme
-        {
-          Reference = new OpenApiReference
-          {
-            Type = ReferenceType.SecurityScheme,
-            Id = "Bearer"
-          },
-          Scheme = "oauth2",
-          Name = "Bearer",
-          In = ParameterLocation.Header
-        },
-        new List<string>()
-      }
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
     });
-  }
-);
 
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "API Ecommerce V1",
+        Description = "API Ecommerce para la gestión de productos y categorías. Versión 1",
+        TermsOfService = new Uri("https://example.com/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Soporte API Ecommerce",
+            Email = "soporte@example.com",
+            Url = new Uri("https://example.com/contact")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Licencia API Ecommerce",
+            Url = new Uri("https://example.com/license")
+        }
+    });
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2",
+        Title = "API Ecommerce V2",
+        Description = "API Ecommerce para la gestión de productos y categorías. Versión 2",
+        TermsOfService = new Uri("https://example.com/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Soporte API Ecommerce",
+            Email = "soporte@example.com",
+            Url = new Uri("https://example.com/contact")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Licencia API Ecommerce",
+            Url = new Uri("https://example.com/license")
+        }
+    });
+});
 var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
@@ -123,7 +162,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    // Registrar los endpoints de Swagger por cada versión detectada por ApiVersioning
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 app.UseHttpsRedirection();
