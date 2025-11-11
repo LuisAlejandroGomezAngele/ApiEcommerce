@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ApiEcommerce.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] //http://localhost:5000/api/products
+[Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/products
 [Authorize(Roles = "Admin")]
 
 public class ProductsController : ControllerBase
