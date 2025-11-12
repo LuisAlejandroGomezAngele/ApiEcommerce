@@ -82,6 +82,38 @@ public class ProductsController : ControllerBase
         }
 
         var product = _mapper.Map<Product>(createProductDto);
+        //Agregando imagen
+
+        if (createProductDto.Image != null)
+        {
+            string fileName = product.ProductId + Guid.NewGuid().ToString() + Path.GetExtension(createProductDto.Image.FileName);
+            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
+            if (!Directory.Exists(imageFolder))
+            {
+                Directory.CreateDirectory(imageFolder);
+            }
+
+            var filePath = Path.Combine(imageFolder, fileName);
+            FileInfo file = new FileInfo(filePath);
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                createProductDto.Image.CopyTo(stream);
+            }
+
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/{HttpContext.Request.PathBase.Value}";
+            product.ImgUrl = $"{baseUrl}ProductsImages/{fileName}";
+            product.ImgUrlLocal = $"ProductsImages/{fileName}";
+
+        }
+        else if (!string.IsNullOrEmpty(createProductDto.ImgUrl))
+        {
+            product.ImgUrl = "https://placehold.com/600x400";
+        }
+
         if (!_productRepository.CreateProduct(product))
         {
             ModelState.AddModelError("CustomError", $"Algo salio mal guardando el registro {product.Name}");
