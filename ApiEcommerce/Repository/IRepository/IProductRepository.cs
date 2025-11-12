@@ -7,6 +7,10 @@ namespace ApiEcommerce.Repository.IRepository
     {
         ICollection<Product> GetProducts();
 
+        ICollection<Product> GetProductsInPages(int pageNumber, int pageSize);
+
+        int GetTotalProducts();
+
         ICollection<Product> GetProductsInCategory(int categoryId);
 
         ICollection<Product> SearchProduct(string name);
