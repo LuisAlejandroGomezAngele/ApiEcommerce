@@ -16,12 +16,22 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ApiEcommerce.Models;
+using ApiEcommerce.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("ConexionSql");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql")));
+  options.UseSqlServer(connectionString)
+  .UseSeeding((context, _) =>
+  {
+      var appContext = (ApplicationDbContext)context;
+
+      DataSeeder.SeedData(appContext);
+
+  })
+);
 
 builder.Services.AddResponseCaching(options =>
 {
