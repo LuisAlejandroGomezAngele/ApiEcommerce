@@ -194,7 +194,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult UpdateProduct(int productId, [FromBody] UpdateProductDto updateProductDto)
+    public IActionResult UpdateProduct(int productId, [FromForm] UpdateProductDto updateProductDto)
     {
         if (updateProductDto == null)
         {
@@ -213,6 +213,37 @@ public class ProductsController : ControllerBase
 
         var product = _mapper.Map<Product>(updateProductDto);
         product.ProductId = productId;
+        //Agregando imagen
+
+        if (updateProductDto.Image != null)
+        {
+            string fileName = product.ProductId + Guid.NewGuid().ToString() + Path.GetExtension(updateProductDto.Image.FileName);
+            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
+            if (!Directory.Exists(imageFolder))
+            {
+                Directory.CreateDirectory(imageFolder);
+            }
+
+            var filePath = Path.Combine(imageFolder, fileName);
+            FileInfo file = new FileInfo(filePath);
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                updateProductDto.Image.CopyTo(stream);
+            }
+
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/{HttpContext.Request.PathBase.Value}";
+            product.ImgUrl = $"{baseUrl}ProductsImages/{fileName}";
+            product.ImgUrlLocal = $"ProductsImages/{fileName}";
+
+        }
+        else if (!string.IsNullOrEmpty(updateProductDto.ImgUrl))
+        {
+            product.ImgUrl = "https://placehold.com/600x400";
+        }
         if (!_productRepository.UpdateProduct(product))
         {
             ModelState.AddModelError("CustomError", $"Algo salio mal guardando el registro {product.Name}");
