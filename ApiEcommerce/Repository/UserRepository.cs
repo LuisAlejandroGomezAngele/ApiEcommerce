@@ -44,7 +44,7 @@ namespace ApiEcommerce.Repository
         }
         public bool IsUniqueUser(string username)
         {
-            return !_db.ApplicationUsers.Any(u => u.UserName.ToLower().Trim() == username.ToLower().Trim());
+            return !_db.ApplicationUsers.Any(u => u.UserName != null && u.UserName.ToLower().Trim() == username.ToLower().Trim());
         }
 
         public async Task<UserLoginResponseDto> Login(UserLoginDto userLoginDto)

@@ -16,5 +16,14 @@ public class UserProfile : Profile
         CreateMap<ApplicationUser, UserDataDto>().ReverseMap();
         CreateMap<ApplicationUser, User>().ReverseMap();
 
+        // Mapeo entre ApplicationUser (Identity) y UserDto usado por el controlador
+        CreateMap<ApplicationUser, UserDto>()
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserName))
+            // Evitar mapear valores sensibles o ausentes (Password se mantiene nulo)
+            .ForMember(dest => dest.Password, opt => opt.Ignore())
+            .ForMember(dest => dest.Role, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Username));
+
     }
 }

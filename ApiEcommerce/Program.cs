@@ -40,7 +40,16 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<UserProfile>();
 });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Configuración de políticas de contraseña: ajustar según las reglas de seguridad de tu proyecto.
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false; // Permitir contraseñas sin minúsculas
+    options.Password.RequireUppercase = false; // Permitir contraseñas sin mayúsculas
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+    options.User.RequireUniqueEmail = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 

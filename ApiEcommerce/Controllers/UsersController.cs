@@ -12,7 +12,6 @@ namespace ApiEcommerce.Controllers;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/users
 [ApiVersionNeutral]
-[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -75,15 +74,24 @@ public class UsersController : ControllerBase
             return BadRequest("El nombre de usuario ya existe.");
         }
 
-        var result = await _userRepository.Register(createUserDto);
-
-        if (result == null)
+        try
         {
-            ModelState.AddModelError("", "Error al registrar el usuario");
-            return StatusCode(500, ModelState);
-        }
+            var result = await _userRepository.Register(createUserDto);
 
-        return CreatedAtRoute("GetUser", new { userId = result.Id }, result);
+            if (result == null)
+            {
+                ModelState.AddModelError("", "Error al registrar el usuario");
+                return StatusCode(500, ModelState);
+            }
+
+            return CreatedAtRoute("GetUser", new { userId = result.Id }, result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Retornar errores de validación (por ejemplo reglas de contraseña) como 400 Bad Request
+            ModelState.AddModelError("", ex.Message);
+            return BadRequest(ModelState);
+        }
     }
 
     [AllowAnonymous]
