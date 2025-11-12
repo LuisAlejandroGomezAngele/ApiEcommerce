@@ -19,7 +19,10 @@ public class Product
     [Column(TypeName = "decimal(18,2)")]
     public decimal Price { get; set; }
 
-    public string ImgUrl { get; set; } = string.Empty;
+    public string? ImgUrl { get; set; } = string.Empty;
+
+    public string? ImgUrlLocal { get; set; } = string.Empty;
+
 
     [Required]
     public string SKU { get; set; } = string.Empty;
