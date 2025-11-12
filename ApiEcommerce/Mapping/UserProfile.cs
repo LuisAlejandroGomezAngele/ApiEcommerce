@@ -1,29 +1,28 @@
-using System;
-using AutoMapper;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
+using Mapster;
 
 namespace ApiEcommerce.Mapping;
 
-public class UserProfile : Profile
+public static class UserMapping
 {
-    public UserProfile()
+    public static void RegisterMappings(TypeAdapterConfig config)
     {
-        CreateMap<User, UserDto>().ReverseMap();
-        CreateMap<User, UserRegisterDto>().ReverseMap();
-        CreateMap<User, UserLoginDto>().ReverseMap();
-        CreateMap<User, UserLoginResponseDto>().ReverseMap();
-        CreateMap<ApplicationUser, UserDataDto>().ReverseMap();
-        CreateMap<ApplicationUser, User>().ReverseMap();
+        config.NewConfig<User, UserDto>().TwoWays();
+        config.NewConfig<User, UserRegisterDto>().TwoWays();
+        config.NewConfig<User, UserLoginDto>().TwoWays();
+        config.NewConfig<User, UserLoginResponseDto>().TwoWays();
+        config.NewConfig<ApplicationUser, UserDataDto>().TwoWays();
+        config.NewConfig<ApplicationUser, User>().TwoWays();
 
-        // Mapeo entre ApplicationUser (Identity) y UserDto usado por el controlador
-        CreateMap<ApplicationUser, UserDto>()
-            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserName))
-            // Evitar mapear valores sensibles o ausentes (Password se mantiene nulo)
-            .ForMember(dest => dest.Password, opt => opt.Ignore())
-            .ForMember(dest => dest.Role, opt => opt.Ignore())
-            .ReverseMap()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Username));
+#pragma warning disable CS8603
+        config.NewConfig<ApplicationUser, UserDto>()
+            .Map(dest => dest.Username, src => src.UserName)
+            .Ignore(dest => dest.Password)
+            .Ignore(dest => dest.Role);
+#pragma warning restore CS8603
 
+        config.NewConfig<UserDto, ApplicationUser>()
+            .Map(dest => dest.UserName, src => src.Username);
     }
 }

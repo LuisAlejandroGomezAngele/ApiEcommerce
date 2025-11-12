@@ -9,7 +9,6 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
-using AutoMapper;
 
 namespace ApiEcommerce.Repository
 {
@@ -22,9 +21,9 @@ namespace ApiEcommerce.Repository
 
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        private readonly IMapper _mapper;
+    private readonly MapsterMapper.IMapper _mapper;
 
-        public UserRepository(ApplicationDbContext db, IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+    public UserRepository(ApplicationDbContext db, IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, MapsterMapper.IMapper mapper)
         {
             _db = db;
             secretKey = configuration.GetValue<string>("AppSettings:SecretKey");
@@ -162,6 +161,10 @@ namespace ApiEcommerce.Repository
             await _userManager.AddToRoleAsync(user, userRole);
 
             var createdUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName == createUserDto.Username);
+            if (createdUser == null)
+            {
+                throw new InvalidOperationException("User was created but could not be retrieved from the database.");
+            }
             return _mapper.Map<UserDataDto>(createdUser);
         }
     }

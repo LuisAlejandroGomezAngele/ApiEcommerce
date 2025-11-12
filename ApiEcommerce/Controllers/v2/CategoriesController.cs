@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
-using AutoMapper;
 using Microsoft.AspNetCore.Cors;
 using ApiEcommerce.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +19,9 @@ public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
 
-    private readonly IMapper _mapper;
+    private readonly MapsterMapper.IMapper _mapper;
 
-    public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
+    public CategoriesController(ICategoryRepository categoryRepository, MapsterMapper.IMapper mapper)
     {
         _categoryRepository = categoryRepository;
         _mapper = mapper;
@@ -58,7 +57,7 @@ public class CategoriesController : ControllerBase
         {
             return NotFound("La categoria con el id especificado no existe.");
         }
-        var categoryDto = _mapper.Map<CategoryDto>(category);
+    var categoryDto = _mapper.Map<CategoryDto>(category);
 
         return Ok(categoryDto);
     }
@@ -81,7 +80,7 @@ public class CategoriesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var category = _mapper.Map<Category>(createCategoryDto);
+    var category = _mapper.Map<Category>(createCategoryDto);
         if (!_categoryRepository.CreateCategory(category))
         {
             ModelState.AddModelError("CustomError", $"Algo salio mal guardando el registro {category.Name}");
@@ -115,7 +114,7 @@ public class CategoriesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        _mapper.Map(updateCategoryDto, category);
+    _mapper.Map(updateCategoryDto, category);
         category.Id = id;
         if (!_categoryRepository.UpdateCategory(category))
         {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 
@@ -16,9 +15,9 @@ public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
 
-    private readonly IMapper _mapper;
+    private readonly MapsterMapper.IMapper _mapper;
 
-    public UsersController(IUserRepository userRepository, IMapper mapper)
+    public UsersController(IUserRepository userRepository, MapsterMapper.IMapper mapper)
     {
         _userRepository = userRepository;
         _mapper = mapper;

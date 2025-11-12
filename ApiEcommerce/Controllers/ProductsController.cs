@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 using ApiEcommerce.Models.Dtos.Responses;
@@ -21,9 +20,9 @@ public class ProductsController : ControllerBase
 
     private readonly ICategoryRepository _categoryRepository;
 
-    private readonly IMapper _mapper;
+    private readonly MapsterMapper.IMapper _mapper;
 
-    public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
+    public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository, MapsterMapper.IMapper mapper)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
@@ -134,7 +133,12 @@ public class ProductsController : ControllerBase
             return StatusCode(500, ModelState);
         }
         // Usar la clave primaria definida en el modelo (ProductId)
-        var createProduct = _productRepository.GetProduct(product.ProductId);
+    var createProduct = _productRepository.GetProduct(product.ProductId);
+        if (createProduct == null)
+        {
+            ModelState.AddModelError("CustomError", "No se pudo recuperar el producto creado.");
+            return StatusCode(500, ModelState);
+        }
         var productDto = _mapper.Map<ProductDto>(createProduct);
         return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productDto);
     }

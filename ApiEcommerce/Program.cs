@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ApiEcommerce.Repository.IRepository;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Mapping;
+using Mapster;
+using MapsterMapper;
 using ApiEcommerce.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -42,13 +44,6 @@ builder.Services.AddResponseCaching(options =>
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-// Registrar AutoMapper registrando los perfiles explícitamente para evitar ambigüedad de sobrecarga
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AddProfile<CategoryProfile>();
-    cfg.AddProfile<ProductProfile>();
-    cfg.AddProfile<UserProfile>();
-});
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -86,6 +81,17 @@ builder.Services.AddControllers(Options =>
     Options.CacheProfiles.Add(CacheProfiles.Default30, CacheProfiles.Default30Profile);
     Options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Default20Profile);
 });
+
+// Configurar Mapster
+var mapsterConfig = TypeAdapterConfig.GlobalSettings;
+// Registrar mappings definidos en la carpeta Mapping
+ApiEcommerce.Mapping.CategoryMapping.RegisterMappings(mapsterConfig);
+ApiEcommerce.Mapping.ProductMapping.RegisterMappings(mapsterConfig);
+ApiEcommerce.Mapping.UserMapping.RegisterMappings(mapsterConfig);
+
+builder.Services.AddSingleton(mapsterConfig);
+// Registrar MapsterMapper ServiceMapper como IMapper
+builder.Services.AddScoped<MapsterMapper.IMapper, MapsterMapper.ServiceMapper>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // Registrar Api Explorer y Swagger
 builder.Services.AddEndpointsApiExplorer();
