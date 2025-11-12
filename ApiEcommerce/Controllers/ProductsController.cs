@@ -64,7 +64,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
+    public IActionResult CreateProduct([FromForm] CreateProductDto createProductDto)
     {
         if (createProductDto == null)
         {
