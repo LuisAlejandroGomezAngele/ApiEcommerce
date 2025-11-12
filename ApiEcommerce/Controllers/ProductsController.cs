@@ -13,7 +13,6 @@ namespace ApiEcommerce.Controllers;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")] //http://localhost:5000/api/products
 [ApiVersionNeutral]
-[Authorize(Roles = "Admin")]
 
 public class ProductsController : ControllerBase
 {
@@ -86,27 +85,7 @@ public class ProductsController : ControllerBase
 
         if (createProductDto.Image != null)
         {
-            string fileName = product.ProductId + Guid.NewGuid().ToString() + Path.GetExtension(createProductDto.Image.FileName);
-            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
-            if (!Directory.Exists(imageFolder))
-            {
-                Directory.CreateDirectory(imageFolder);
-            }
-
-            var filePath = Path.Combine(imageFolder, fileName);
-            FileInfo file = new FileInfo(filePath);
-            if (file.Exists)
-            {
-                file.Delete();
-            }
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                createProductDto.Image.CopyTo(stream);
-            }
-
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/{HttpContext.Request.PathBase.Value}";
-            product.ImgUrl = $"{baseUrl}ProductsImages/{fileName}";
-            product.ImgUrlLocal = $"ProductsImages/{fileName}";
+            UploadProductImage(createProductDto, product);
 
         }
         else if (!string.IsNullOrEmpty(createProductDto.ImgUrl))
@@ -123,6 +102,31 @@ public class ProductsController : ControllerBase
         var createProduct = _productRepository.GetProduct(product.ProductId);
         var productDto = _mapper.Map<ProductDto>(createProduct);
         return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productDto);
+    }
+
+    private void UploadProductImage(dynamic productDto, Product product)
+    {
+        string fileName = product.ProductId + Guid.NewGuid().ToString() + Path.GetExtension(productDto.Image.FileName);
+        var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
+        if (!Directory.Exists(imageFolder))
+        {
+            Directory.CreateDirectory(imageFolder);
+        }
+
+        var filePath = Path.Combine(imageFolder, fileName);
+        FileInfo file = new FileInfo(filePath);
+        if (file.Exists)
+        {
+            file.Delete();
+        }
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            productDto.Image.CopyTo(stream);
+        }
+
+        var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/{HttpContext.Request.PathBase.Value}";
+        product.ImgUrl = $"{baseUrl}ProductsImages/{fileName}";
+        product.ImgUrlLocal = $"ProductsImages/{fileName}";
     }
 
     [HttpGet("searchProductByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
@@ -217,27 +221,7 @@ public class ProductsController : ControllerBase
 
         if (updateProductDto.Image != null)
         {
-            string fileName = product.ProductId + Guid.NewGuid().ToString() + Path.GetExtension(updateProductDto.Image.FileName);
-            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
-            if (!Directory.Exists(imageFolder))
-            {
-                Directory.CreateDirectory(imageFolder);
-            }
-
-            var filePath = Path.Combine(imageFolder, fileName);
-            FileInfo file = new FileInfo(filePath);
-            if (file.Exists)
-            {
-                file.Delete();
-            }
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                updateProductDto.Image.CopyTo(stream);
-            }
-
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/{HttpContext.Request.PathBase.Value}";
-            product.ImgUrl = $"{baseUrl}ProductsImages/{fileName}";
-            product.ImgUrlLocal = $"ProductsImages/{fileName}";
+            UploadProductImage(updateProductDto, product);
 
         }
         else if (!string.IsNullOrEmpty(updateProductDto.ImgUrl))
