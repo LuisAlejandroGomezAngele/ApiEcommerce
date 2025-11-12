@@ -57,6 +57,40 @@ public class ProductsController : ControllerBase
         return Ok(productDto);
     }
 
+    [AllowAnonymous]
+    [HttpGet("Paged", Name = "GetProductsInPage")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetProductsInPage([FromQuery] int page = 1, int pageSize = 10)
+    {
+        if (page <= 0 || pageSize <= 0)
+        {
+            return BadRequest("El número de página y el tamaño de página deben ser mayores que cero.");
+        }
+        var totalProducts = _productRepository.GetTotalProducts();
+        var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+        var products = _productRepository.GetProductsInPages(page, pageSize);
+
+        if (products == null || !products.Any())
+        {
+            return NotFound("No se encontraron productos.");
+        }
+
+        var productsDto = _mapper.Map<List<ProductDto>>(products);
+        var response = new
+        {
+            TotalProducts = totalProducts,
+            PageSize = pageSize,
+            CurrentPage = page,
+            TotalPages = totalPages,
+            Products = productsDto
+        };
+        return Ok(response);
+    }
+
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status201Created)]
