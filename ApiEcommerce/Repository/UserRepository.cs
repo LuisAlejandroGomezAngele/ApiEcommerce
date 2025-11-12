@@ -124,19 +124,45 @@ namespace ApiEcommerce.Repository
             };
         }
 
-        public async Task<User> Register(CreateUserDto createUserDto)
+        public async Task<UserDataDto> Register(CreateUserDto createUserDto)
         {
-            var encriptedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
-            var user = new User()
+            if (string.IsNullOrWhiteSpace(createUserDto.Username) || string.IsNullOrWhiteSpace(createUserDto.Password))
             {
-                Name = createUserDto.Name ?? "No Name",
-                Username = createUserDto.Username ?? "No UserName",
-                Password = encriptedPassword,
-                Role = createUserDto.Role
+                throw new ArgumentException("Username or password is empty");
+            }
+
+            if (createUserDto.Password == null)
+            {
+                throw new ArgumentException("Password is null");
+            }
+
+            var user = new ApplicationUser()
+            {
+                UserName = createUserDto.Username,
+                Email = createUserDto.Username,
+                NormalizedEmail = createUserDto.Username.ToUpper(),
+                Name = createUserDto.Name
             };
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-            return user;
+
+            var result = await _userManager.CreateAsync(user, createUserDto.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"User creation failed: {errors}");
+            }
+
+            var userRole = createUserDto.Role ?? "User";
+            var roleexists = await _roleManager.RoleExistsAsync(userRole);
+            if (!roleexists)
+            {
+                var identityRole = await _roleManager.CreateAsync(new IdentityRole(userRole));
+            }
+
+            await _userManager.AddToRoleAsync(user, userRole);
+
+            var createdUser = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.UserName == createUserDto.Username);
+            return _mapper.Map<UserDataDto>(createdUser);
         }
     }
 }
