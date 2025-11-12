@@ -6,6 +6,7 @@ using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
+using ApiEcommerce.Models.Dtos.Responses;
 
 
 namespace ApiEcommerce.Controllers;
@@ -79,13 +80,13 @@ public class ProductsController : ControllerBase
         }
 
         var productsDto = _mapper.Map<List<ProductDto>>(products);
-        var response = new
+        var response = new PaginationResponse<ProductDto>
         {
-            TotalProducts = totalProducts,
+            TotalItems = totalProducts,
             PageSize = pageSize,
-            CurrentPage = page,
+            PageNumber = page,
             TotalPages = totalPages,
-            Products = productsDto
+            Items = productsDto
         };
         return Ok(response);
     }
